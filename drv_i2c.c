@@ -149,6 +149,110 @@ esp_err_t drv_i2c_initialize_interface(drv_i2c_e_index_t i2c_index)
     }
 }
 
+
+
+esp_err_t i2c_master_point_to_device(i2c_port_t i2c_num, uint8_t device_address,
+                                     const uint8_t* write_buffer, size_t write_size,
+                                     TickType_t ticks_to_wait)
+{
+    esp_err_t err = ESP_OK;
+    //#define TRANSACTIONS 1
+    //uint8_t buffer[I2C_LINK_RECOMMENDED_SIZE(TRANSACTIONS)] = { 0 };
+    //i2c_cmd_handle_t handle = i2c_cmd_link_create_static(buffer, sizeof(buffer));
+    i2c_cmd_handle_t handle = i2c_cmd_link_create();
+    assert (handle != NULL);
+
+    err = i2c_master_start(handle);
+    if (err != ESP_OK) {
+        goto end;
+    }
+
+    err = i2c_master_write_byte(handle, device_address << 1 | I2C_MASTER_WRITE, true);
+    if (err != ESP_OK) {
+        goto end;
+    }
+
+    err = i2c_master_write(handle, write_buffer, write_size, true);
+    if (err != ESP_OK) {
+        goto end;
+    }
+
+    i2c_master_stop(handle);
+    err = i2c_master_cmd_begin(i2c_num, handle, ticks_to_wait);
+
+end:
+    //i2c_cmd_link_delete_static(handle);
+    i2c_cmd_link_delete(handle);
+    return err;
+}
+
+
+esp_err_t i2c_master_read_pointed_register(i2c_port_t i2c_num, uint8_t device_address,
+                                       uint8_t* read_buffer, size_t read_size,
+                                       TickType_t ticks_to_wait)
+{
+    esp_err_t err = ESP_OK;
+    //#define TRANSACTIONS 1
+    //uint8_t buffer[I2C_LINK_RECOMMENDED_SIZE(TRANSACTIONS)] = { 0 };
+    //i2c_cmd_handle_t handle = i2c_cmd_link_create_static(buffer, sizeof(buffer));
+    i2c_cmd_handle_t handle = i2c_cmd_link_create();
+    assert (handle != NULL);
+
+    err = i2c_master_start(handle);
+    if (err != ESP_OK) {
+        goto end;
+    }
+
+    err = i2c_master_write_byte(handle, device_address << 1 | I2C_MASTER_READ, true);
+    if (err != ESP_OK) {
+        goto end;
+    }
+
+    err = i2c_master_read(handle, read_buffer, read_size, I2C_MASTER_LAST_NACK);
+    if (err != ESP_OK) {
+        goto end;
+    }
+
+    i2c_master_stop(handle);
+    err = i2c_master_cmd_begin(i2c_num, handle, ticks_to_wait);
+
+end:
+    //i2c_cmd_link_delete_static(handle);
+    i2c_cmd_link_delete(handle);
+    return err;
+}
+
+
+
+esp_err_t drv_i2c_master_point_to_register( drv_i2c_e_index_t i2c_index, 
+                                            uint8_t device_address,
+                                            const uint8_t* register_address, size_t register_address_size,
+                                            TickType_t ticks_to_wait)
+{
+    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    {
+        ESP_LOGE(TAG, "Interface Index %d not supported point to register", i2c_index);
+        return ESP_ERR_INVALID_ARG;
+    }
+    else
+    {
+        esp_err_t err;    
+        err = i2c_master_point_to_device(   i2c_port[i2c_index], device_address,
+                                            register_address, register_address_size,
+                                            ticks_to_wait);
+        if (err != ESP_OK)
+        {
+            ESP_LOGE(TAG, "Interface Index %d failure point to register", i2c_index);
+        }
+        else
+        {
+            ESP_LOGD(TAG, "Interface Index %d success point to register", i2c_index);
+        }
+        return err;
+    }
+}
+
+
 esp_err_t drv_i2c_master_write_to_register( drv_i2c_e_index_t i2c_index, uint8_t device_address,
                                             const uint8_t* register_address, size_t register_address_size,
                                             const uint8_t* write_data_buffer, size_t write_data_size,
@@ -187,6 +291,36 @@ esp_err_t drv_i2c_master_write_to_register( drv_i2c_e_index_t i2c_index, uint8_t
         return err;
     }
 }
+
+
+esp_err_t drv_i2c_master_read_pointed_register(drv_i2c_e_index_t i2c_index, uint8_t device_address,
+                                            uint8_t* read_data_buffer, size_t read_data_size,
+                                            TickType_t ticks_to_wait)
+{
+    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    {
+        ESP_LOGE(TAG, "Interface Index %d not supported read", i2c_index);
+        return ESP_ERR_INVALID_ARG;
+    }
+    else
+    {        
+        esp_err_t err;      
+        err = i2c_master_read_pointed_register( i2c_port[i2c_index], device_address,
+                                            read_data_buffer, read_data_size,
+                                            ticks_to_wait);
+        if (err != ESP_OK)
+        {
+            ESP_LOGE(TAG, "Interface Index %d failure read", i2c_index);
+        }
+        else
+        {
+            ESP_LOGD(TAG, "Interface Index %d success read", i2c_index);
+        }
+        return err;
+    }
+}
+
+
 
 esp_err_t drv_i2c_master_read_from_register(drv_i2c_e_index_t i2c_index, uint8_t device_address,
                                             const uint8_t* register_address, size_t register_address_size,

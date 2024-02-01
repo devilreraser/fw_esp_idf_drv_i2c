@@ -49,6 +49,7 @@
 #define DRV_I2C_1_PORT  -1
 #endif
 
+#if CONFIG_DRV_I2C_USE
 #define DRV_I2C_0_SDA_GPIO      CONFIG_DRV_I2C_0_SDA_GPIO
 #define DRV_I2C_0_SCL_GPIO      CONFIG_DRV_I2C_0_SCL_GPIO
 
@@ -57,7 +58,16 @@
 
 #define DRV_I2C_0_FREQUENCY     CONFIG_DRV_I2C_0_FREQUENCY
 #define DRV_I2C_1_FREQUENCY     CONFIG_DRV_I2C_1_FREQUENCY
+#else
+#define DRV_I2C_0_SDA_GPIO      -1
+#define DRV_I2C_0_SCL_GPIO      -1
 
+#define DRV_I2C_1_SDA_GPIO      -1
+#define DRV_I2C_1_SCL_GPIO      -1
+
+#define DRV_I2C_0_FREQUENCY     -1
+#define DRV_I2C_1_FREQUENCY     -1
+#endif
 
 /* *****************************************************************************
  * Enumeration Definitions

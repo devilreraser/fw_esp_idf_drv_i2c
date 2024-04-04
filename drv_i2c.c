@@ -118,7 +118,7 @@ esp_err_t drv_i2c_initialize_interface(drv_i2c_e_index_t i2c_index)
     esp_log_level_set(TAG, ESP_LOG_INFO);
 
 
-    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    if (i2c_index >= (drv_i2c_e_index_t)I2C_INTERFACE_COUNT) 
     {
         ESP_LOGE(TAG, "Interface Index %d not supported initialize", i2c_index);
         return ESP_ERR_INVALID_ARG;
@@ -229,7 +229,7 @@ esp_err_t drv_i2c_master_point_to_register( drv_i2c_e_index_t i2c_index,
                                             const uint8_t* register_address, size_t register_address_size,
                                             TickType_t ticks_to_wait)
 {
-    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    if (i2c_index >= (drv_i2c_e_index_t)I2C_INTERFACE_COUNT) 
     {
         ESP_LOGE(TAG, "Interface Index %d not supported point to register", i2c_index);
         return ESP_ERR_INVALID_ARG;
@@ -256,7 +256,7 @@ esp_err_t drv_i2c_master_read_pointed_register(drv_i2c_e_index_t i2c_index, uint
                                             uint8_t* read_data_buffer, size_t read_data_size,
                                             TickType_t ticks_to_wait)
 {
-    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    if (i2c_index >= (drv_i2c_e_index_t)I2C_INTERFACE_COUNT) 
     {
         ESP_LOGE(TAG, "Interface Index %d not supported read", i2c_index);
         return ESP_ERR_INVALID_ARG;
@@ -286,7 +286,7 @@ esp_err_t drv_i2c_master_write_to_register( drv_i2c_e_index_t i2c_index, uint8_t
                                             const uint8_t* write_data_buffer, size_t write_data_size,
                                             TickType_t ticks_to_wait)
 {
-    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    if (i2c_index >= (drv_i2c_e_index_t)I2C_INTERFACE_COUNT) 
     {
         ESP_LOGE(TAG, "Interface Index %d not supported write", i2c_index);
         return ESP_ERR_INVALID_ARG;
@@ -325,7 +325,7 @@ esp_err_t drv_i2c_master_read_from_register(drv_i2c_e_index_t i2c_index, uint8_t
                                             uint8_t* read_data_buffer, size_t read_data_size,
                                             TickType_t ticks_to_wait)
 {
-    if (i2c_index >= I2C_INTERFACE_COUNT) 
+    if (i2c_index >= (drv_i2c_e_index_t)I2C_INTERFACE_COUNT) 
     {
         ESP_LOGE(TAG, "Interface Index %d not supported read", i2c_index);
         return ESP_ERR_INVALID_ARG;
